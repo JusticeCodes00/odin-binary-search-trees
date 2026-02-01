@@ -69,6 +69,27 @@ export default class Tree {
 
     return false;
   }
+
+  insert(value) {
+    if (!this.#root) {
+      this.#root = new Node(value);
+      return;
+    }
+
+    let current = this.#root;
+    let prev = null;
+
+    while (current) {
+      if (current.data === value) return;
+      prev = current;
+      if (value > current.data) current = current.right;
+      else current = current.left;
+    }
+
+    const newNode = new Node(value);
+    if (value > prev.data) prev.right = newNode;
+    else if (value < prev.data) prev.left = newNode;
+  }
 }
 
 // TEST
@@ -79,4 +100,4 @@ const arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const tree = new Tree(arr);
 
 // prettyPrint(tree.root);
-console.log(tree.includes(20003));
+console.log(tree.insert(100));
