@@ -5,9 +5,10 @@ export default class Tree {
   #root;
 
   constructor(arr) {
-    this.root = this.#buildTree(arr);
+    this.#root = this.#buildTree(arr);
 
     // console.log(this.root);
+    prettyPrint(this.#root);
   }
 
   #merge(leftArr, rightArr) {
@@ -49,12 +50,24 @@ export default class Tree {
 
     let mid = start + Math.floor((end - start) / 2);
     let root = new Node(arr[mid]);
-    
+
     // Divide from middle element
     root.left = this.#sortedArrayToBSTRecur(arr, start, mid - 1);
     root.right = this.#sortedArrayToBSTRecur(arr, mid + 1, end);
-    
+
     return root;
+  }
+
+  includes(value) {
+    let current = this.#root;
+
+    while (current) {
+      if (current.data === value) return true;
+      if (value > current.data) current = current.right;
+      else current = current.left;
+    }
+
+    return false;
   }
 }
 
@@ -65,4 +78,5 @@ const testArrTwo = [15, 20, 50, 80];
 const arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const tree = new Tree(arr);
 
-prettyPrint(tree.root);
+// prettyPrint(tree.root);
+console.log(tree.includes(20003));
