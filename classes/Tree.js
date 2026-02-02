@@ -159,7 +159,7 @@ export default class Tree {
   }
 
   levelOrderForEach(callback) {
-    if (!callback || !(callback instanceof Function)) {
+    if (!callback || typeof callback !== "function") {
       throw new Error("A callback is required");
     }
 
@@ -172,7 +172,59 @@ export default class Tree {
     }
   }
 
-  
+  // TODO: write when done with project
+  levelOrderForEachRecur(callback, root = this.#root) {}
+
+  // root, left , right
+  preOrderForEach(callback, root = this.#root) {
+    if (!root) return;
+    callback(root.data);
+    this.preOrderForEach(callback, root.left);
+    this.preOrderForEach(callback, root.right);
+  }
+
+  // left, root, right
+  inOrderForEach(callback, root = this.#root) {
+    if (!root) return;
+    this.inOrderForEach(callback, root.left);
+    callback(root.data);
+    this.inOrderForEach(callback, root.right);
+  }
+
+  // left, right, root
+  postOrderForEach(callback, root = this.#root) {
+    if (!root) return;
+    this.postOrderForEach(callback, root.left);
+    this.postOrderForEach(callback, root.right);
+    callback(root.data);
+  }
+
+  depth(value) {
+    let current = this.#root;
+    let count = 0;
+
+    while (current) {
+      if (current.data === value) break;
+      if (value > current.data) current = current.right;
+      else current = current.left;
+      count++;
+    }
+
+    if (!current) return;
+
+    return count;
+  }
+
+  //   #findRecur(node, value) {
+  //     if (!node) return;
+  //     else if (node.data === value) return node;
+  //     else if (value > node.data) return this.#findRecur(node.right, value);
+  //     else return this.#findRecur(node.left, value);
+  //   }
+
+  //   height(value) {
+  //     return this.#findRecur(this.#root, value);
+  //   }
 }
 
 // TEST
@@ -186,6 +238,4 @@ const tree = new Tree(arr);
 
 // console.log(tree.deleteItem(4));
 
-tree.levelOrderForEach((value) => {
-  console.log(value);
-});
+console.log(tree.height(7));
