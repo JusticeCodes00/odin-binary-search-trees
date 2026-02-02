@@ -59,6 +59,8 @@ export default class Tree {
   }
 
   includes(value) {
+    if (!this.#root) return false;
+
     let current = this.#root;
 
     while (current) {
@@ -90,6 +92,55 @@ export default class Tree {
     if (value > prev.data) prev.right = newNode;
     else if (value < prev.data) prev.left = newNode;
   }
+
+  deleteItem(value) {
+    if (!this.#root) return;
+
+    let current = this.#root;
+    let prev = null;
+
+    while (current) {
+      if (current.data === value) {
+        break;
+      }
+
+      prev = current;
+      if (value > current.data) current = current.right;
+      else current = current.left;
+    }
+
+    if (!current) return; // value is not in list, exit
+
+    const nodeHasNoChildren = !current.left && !current.right;
+    const nodeHasAtMostOnceChild = !current.left || !current.right;
+    const targetOnPrevLeft = prev.left === current;
+    const targetOnPrevRight = prev.right === current;
+
+    if (nodeHasNoChildren) {
+      // Find the side on the prev node where the target is and break the link
+      if (prev.left === current) prev.left = null;
+      else if (prev.right === current) prev.right = null;
+    }
+
+    if (nodeHasAtMostOnceChild) {
+      let temp = null;
+
+      if (current.left) temp = current.left;
+      else temp = current.right;
+
+      if (targetOnPrevLeft) {
+        prev.left = temp;
+        current.left = null;
+      } else if (targetOnPrevRight) {
+        prev.right = temp;
+        current.right = null;
+      }
+    }
+
+    console.log("target " + current.data);
+    console.log("prev " + prev.data);
+    prettyPrint(this.#root);
+  }
 }
 
 // TEST
@@ -100,4 +151,5 @@ const arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const tree = new Tree(arr);
 
 // prettyPrint(tree.root);
-console.log(tree.insert(100));
+
+console.log(tree.deleteItem(5));
