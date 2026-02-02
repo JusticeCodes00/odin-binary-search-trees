@@ -7,7 +7,6 @@ export default class Tree {
   constructor(arr) {
     this.#root = this.#buildTree(arr);
 
-    // console.log(this.root);
     prettyPrint(this.#root);
   }
 
@@ -112,35 +111,68 @@ export default class Tree {
     if (!current) return; // value is not in list, exit
 
     const nodeHasNoChildren = !current.left && !current.right;
-    const nodeHasAtMostOnceChild = !current.left || !current.right;
-    const targetOnPrevLeft = prev.left === current;
-    const targetOnPrevRight = prev.right === current;
+    const nodeHasOneChild =
+      (!current.left && current.right) || (current.left && !current.right);
+    const targetOnPrevLeft = prev?.left === current;
+    const targetOnPrevRight = prev?.right === current;
+    const isRoot = !prev;
+
+    if (isRoot) {
+      // current is root
+      if (nodeHasNoChildren) {
+        this.#root = null;
+      } else if (nodeHasOneChild) {
+        this.#root = current.left ?? current.right;
+      } else {
+        const value = this.#getSuccessorValue(current.right);
+        this.deleteItem(value);
+        current.data = value;
+      }
+      return;
+    }
 
     if (nodeHasNoChildren) {
       // Find the side on the prev node where the target is and break the link
-      if (prev.left === current) prev.left = null;
-      else if (prev.right === current) prev.right = null;
+      if (targetOnPrevLeft) prev.left = null;
+      else if (targetOnPrevRight) prev.right = null;
     }
 
-    if (nodeHasAtMostOnceChild) {
-      let temp = null;
+    if (nodeHasOneChild) {
+      let temp = current.left ?? current.right;
 
-      if (current.left) temp = current.left;
-      else temp = current.right;
-
-      if (targetOnPrevLeft) {
-        prev.left = temp;
-        current.left = null;
-      } else if (targetOnPrevRight) {
-        prev.right = temp;
-        current.right = null;
-      }
+      if (targetOnPrevLeft) prev.left = temp;
+      else if (targetOnPrevRight) prev.right = temp;
+    } else {
+      const value = this.#getSuccessorValue(current.right);
+      this.deleteItem(value);
+      current.data = value;
     }
-
-    console.log("target " + current.data);
-    console.log("prev " + prev.data);
-    prettyPrint(this.#root);
   }
+
+  #getSuccessorValue(root) {
+    if (!root) return;
+    let current = root;
+    while (current.left) {
+      current = current.left;
+    }
+    return current.data;
+  }
+
+  levelOrderForEach(callback) {
+    if (!callback || !(callback instanceof Function)) {
+      throw new Error("A callback is required");
+    }
+
+    const queue = [this.#root];
+    while (queue.length) {
+      const current = queue.shift();
+      callback(current.data);
+      if (current.left) queue.push(current.left);
+      if (current.right) queue.push(current.right);
+    }
+  }
+
+  
 }
 
 // TEST
@@ -152,4 +184,8 @@ const tree = new Tree(arr);
 
 // prettyPrint(tree.root);
 
-console.log(tree.deleteItem(5));
+// console.log(tree.deleteItem(4));
+
+tree.levelOrderForEach((value) => {
+  console.log(value);
+});
