@@ -1,5 +1,4 @@
 import Node from "./Node.js";
-import prettyPrint from "../utils/prettyPrint.js";
 
 export default class Tree {
     #root;
@@ -228,32 +227,42 @@ export default class Tree {
         );
     }
 
-    prettyPrint = (node = this.#root, prefix = "", isLeft = true) => {
+    prettyPrint(node = this.#root, prefix = "", isLeft = true) {
         if (node === null || node === undefined) {
             return;
         }
 
-        prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
+        this.prettyPrint(
+            node.right,
+            `${prefix}${isLeft ? "│   " : "    "}`,
+            false
+        );
         console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`);
-        prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
-    };
+        this.prettyPrint(
+            node.left,
+            `${prefix}${isLeft ? "    " : "│   "}`,
+            true
+        );
+    }
 
     isBalanced() {
-        if (this.#root) return true;
+        if (!this.#root) return true; // empty tree is balanced
         return this.#isTreeBalancedRecur(this.#root);
     }
 
     #isTreeBalancedRecur(node) {
         if (!node) return true;
+
         if (
             Math.abs(
-                this.getNodeHeight(node.left) - this.getNodeHeight(node.right)
+                this.#getNodeHeight(node.left) - this.#getNodeHeight(node.right)
             ) > 1
         )
             return false;
+
         return (
-            this.isTreeBalancedRecur(node.left) &&
-            this.isTreeBalancedRecur(node.right)
+            this.#isTreeBalancedRecur(node.left) &&
+            this.#isTreeBalancedRecur(node.right)
         );
     }
 
